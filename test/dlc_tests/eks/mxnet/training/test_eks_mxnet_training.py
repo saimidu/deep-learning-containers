@@ -1,11 +1,16 @@
-import re
 import os
 import random
-import test.test_utils.eks as eks_utils
+import re
+
+import pytest
 
 from invoke import run
+from invoke.context import Context
+
+import test.test_utils.eks as eks_utils
 
 
+@pytest.mark.model("mnist")
 def test_eks_mxnet_single_node_training(mxnet_training):
     """
     Function to create a pod using kubectl and given container image, and run MXNet training
@@ -17,12 +22,18 @@ def test_eks_mxnet_single_node_training(mxnet_training):
 
     rand_int = random.randint(4001, 6000)
 
+    framework_version_search = re.search(r"\d+(\.\d+){2}", mxnet_training)
+    framework_version = framework_version_search.group()
+    if not framework_version_search:
+        framework_version_search = re.search(r"\d+\.\d+", mxnet_training)
+        framework_version = framework_version_search.group() + ".0"
+
     yaml_path = os.path.join(os.sep, "tmp", f"mxnet_single_node_training_{rand_int}.yaml")
     pod_name = f"mxnet-single-node-training-{rand_int}"
 
     args = (
-        "git clone https://github.com/apache/incubator-mxnet.git && python "
-        "/incubator-mxnet/example/image-classification/train_mnist.py"
+        f"git clone -b {framework_version} https://github.com/apache/incubator-mxnet.git && python "
+        f"/incubator-mxnet/example/image-classification/train_mnist.py"
     )
 
     processor_type = "gpu" if "gpu" in mxnet_training else "cpu"
@@ -59,6 +70,8 @@ def test_eks_mxnet_single_node_training(mxnet_training):
         run("kubectl delete pods {}".format(pod_name))
 
 
+@pytest.mark.integration("dgl")
+@pytest.mark.model("gcn")
 def test_eks_mxnet_dgl_single_node_training(mxnet_training, py3_only):
 
     """
@@ -69,15 +82,17 @@ def test_eks_mxnet_dgl_single_node_training(mxnet_training, py3_only):
     """
 
     training_result = False
-
+    ctx = Context()
     rand_int = random.randint(4001, 6000)
 
     yaml_path = os.path.join(os.sep, "tmp", f"mxnet_single_node_training_dgl_{rand_int}.yaml")
     pod_name = f"mxnet-single-node-training-dgl-{rand_int}"
 
+    dgl_branch = eks_utils.get_dgl_branch(ctx, mxnet_training)
+
     args = (
-        "git clone -b 0.4.x https://github.com/dmlc/dgl.git && "
-        "cd /dgl/examples/mxnet/gcn/ && DGLBACKEND=mxnet python train.py --dataset cora"
+        f"git clone -b {dgl_branch} https://github.com/dmlc/dgl.git && "
+        f"cd /dgl/examples/mxnet/gcn/ && DGLBACKEND=mxnet python train.py --dataset cora"
     )
 
     # TODO: Change hardcoded value to read a mapping from the EKS cluster instance.
@@ -116,6 +131,8 @@ def test_eks_mxnet_dgl_single_node_training(mxnet_training, py3_only):
         run("kubectl delete pods {}".format(pod_name))
 
 
+@pytest.mark.integration("gluonnlp")
+@pytest.mark.model("TextCNN")
 def test_eks_mxnet_gluonnlp_single_node_training(mxnet_training, py3_only):
 
     """

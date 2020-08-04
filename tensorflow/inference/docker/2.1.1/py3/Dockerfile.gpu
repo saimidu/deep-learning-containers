@@ -43,6 +43,7 @@ RUN apt-get update \
     libnccl2=${NCCL_VERSION} \
     libgomp1 \
     curl \
+    emacs \
     git \
     wget \
     vim \
@@ -64,7 +65,7 @@ RUN apt-get update \
  && apt-get update \
  && apt-get install -y --no-install-recommends libnvinfer6=${TF_TENSORRT_VERSION}-1+cuda10.1 \
  && apt-get clean \
- && rm -rf /var/lib/apt/lists/* 
+ && rm -rf /var/lib/apt/lists/*
 
 RUN wget -c https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz \
  && apt-get update \
@@ -114,7 +115,7 @@ RUN apt-get update \
 
 # cython, falcon, gunicorn, grpc
 RUN ${PIP} install -U --no-cache-dir \
-    awscli \
+    "awscli<2" \
     cython==0.29.14 \
     falcon==2.0.0 \
     gunicorn==20.0.4 \

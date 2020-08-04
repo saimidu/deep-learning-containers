@@ -1,17 +1,21 @@
 import os
 import random
 
-import test.test_utils.eks as eks_utils
+import pytest
 
 from invoke import run
 
+import test.test_utils.eks as eks_utils
 
+
+@pytest.mark.integration("keras")
+@pytest.mark.model("mnist")
 def test_eks_tensorflow_single_node_training(tensorflow_training):
     """
     Function to create a pod using kubectl and given container image, and run MXNet training
-    Args:
-        :param setup_utils: environment in which EKS tools are setup
-        :param tensorflow_training: the ECR URI
+
+    :param setup_utils: environment in which EKS tools are setup
+    :param tensorflow_training: the ECR URI
     """
 
     training_result = False
@@ -21,7 +25,7 @@ def test_eks_tensorflow_single_node_training(tensorflow_training):
     yaml_path = os.path.join(os.sep, "tmp", f"tensorflow_single_node_training_{rand_int}.yaml")
     pod_name = f"tensorflow-single-node-training-{rand_int}"
 
-    args = ("git clone https://github.com/fchollet/keras.git "
+    args = ("git clone https://github.com/keras-team/keras "
             "&& sed -i 's/import keras/from tensorflow import keras/g; "
             "s/from keras/from tensorflow.keras/g' /keras/examples/mnist_cnn.py "
             "&& python /keras/examples/mnist_cnn.py")
