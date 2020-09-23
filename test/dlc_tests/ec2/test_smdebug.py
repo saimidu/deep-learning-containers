@@ -32,6 +32,8 @@ def test_smdebug_gpu(training, ec2_connection, region, gpu_only, py3_only):
 @pytest.mark.parametrize("ec2_instance_type", SMDEBUG_EC2_CPU_INSTANCE_TYPE, indirect=True)
 def test_smdebug_cpu(training, ec2_connection, region, cpu_only, py3_only):
     # TODO: Remove this once test timeout has been debugged (failures especially on m4.16xlarge)
+    if is_tf2(training) and "m4.16xlarge" in SMDEBUG_EC2_CPU_INSTANCE_TYPE:
+        pytest.skip("Currently skipping for TF2 on m4.16xlarge until the issue is fixed")
     if is_tf1(training):
         pytest.skip("Currently skipping for TF1 until the issue is fixed")
     run_smdebug_test(training, ec2_connection, region)
@@ -69,7 +71,7 @@ def run_smdebug_test(
         LOGGER.error(f"Caught exception while trying to run test via fabric. Output: {debug_output.stdout}")
         raise
 
-    # LOGGER.info(test_output.stdout) # Uncomment this line for a complete log dump
+    # LOGGER.info(test_output.stdout)  # Uncomment this line for a complete log dump
 
     assert test_output.ok, f"SMDebug tests failed. Output:\n{test_output.stdout}"
 
