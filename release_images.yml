@@ -1,8 +1,8 @@
 ---
 release_images:
   1:
-    framework: "pytorch"
-    version: "10.6.0"
+    framework: "mxnet"
+    version: "10.7.0"
     training:
       device_types: ["cpu", "gpu"]
       python_versions: ["py36"]
