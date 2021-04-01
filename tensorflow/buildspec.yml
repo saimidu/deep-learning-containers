@@ -1,19 +1,19 @@
 framework: &FRAMEWORK tensorflow
 current_versions:
-  # With N parallel pipelines, create N entries for the latest framework versions
+  # With N parallel pipelines, create entries for the N latest framework versions
   # N = 4
   - "2.4"
   - "2.3"
   - "2.2"
   - "2.1"
 current_eia_versions:
-  # With N parallel pipelines, create N entries for the latest framework versions
+  # With N parallel pipelines, create entries for the N latest framework versions
   # N = 2
   - "2.3-eia"
   - "2.0-eia"
 current_neuron_versions:
   # N = 1
-  # With N parallel pipelines, create N entries for the latest framework versions
+  # With N parallel pipelines, create entries for the N latest framework versions
   - "1.15-neuron"
 buildspecs:
   # Specify the dedicated buildspec file for each framework version here
