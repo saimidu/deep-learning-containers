@@ -52,6 +52,9 @@ def main():
         utils.build_setup(
             args.framework, device_types=device_types, image_types=image_types, py_versions=py_versions,
         )
+        # TODO: Insert code here to figure out which framework version buildspec file should be used.
+        #       For now, treat framework version at the top of the list as the PR framework version.
+        # framework_version_buildspec = utils.get_framework_version_from_environment(arg.buildspec)
         image_builder(args.buildspec)
 
 
