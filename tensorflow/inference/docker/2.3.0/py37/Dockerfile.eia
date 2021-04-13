@@ -76,10 +76,11 @@ RUN ln -s $(which ${PYTHON}) /usr/local/bin/python \
 # cython, falcon, gunicorn, grpc
 RUN ${PIP} install --no-cache-dir \
     "awscli<2" \
+    boto3 \
     cython==0.29.21 \
     falcon==2.0.0 \
     gunicorn==20.0.4 \
-    gevent==1.5.0 \
+    gevent==21.1.1 \
     requests==2.24.0 \
     grpcio==1.31.0 \
     protobuf==3.12.4 \
