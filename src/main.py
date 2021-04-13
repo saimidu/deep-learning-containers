@@ -62,7 +62,7 @@ def main():
             args.buildspec, pipeline_index, **fw_version_buildspec_config
         )
         if framework_version_buildspec:
-            image_builder(framework_version_buildspec)
+            image_builder(framework_version_buildspec["framework_version_buildspec"])
 
 
 if __name__ == "__main__":

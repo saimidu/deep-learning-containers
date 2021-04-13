@@ -516,10 +516,13 @@ def get_framework_version_from_environment(
         if neuron_build
         else []
     )
+    # If there are not enough entries, default to building nothing
     if not framework_version_list or pipeline_index >= len(framework_version_list):
         return {}
+    # Reverse sort framework versions to always build the latest versions available
     sorted_fw_versions = sorted(framework_version_list, key=Version, reverse=True)
     framework_version_key = sorted_fw_versions[pipeline_index]
+    # framework_version_key sometimes has words in it such as "neuron" or "eia" which must be ignored
     framework_version = re.search(r"\d+\.\d+", framework_version_key).group()
     framework_version_buildspec = fw_version_buildspec_file_paths.get(framework_version_key)
     return {

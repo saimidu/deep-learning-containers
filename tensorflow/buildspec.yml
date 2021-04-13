@@ -23,6 +23,5 @@ buildspecs:
   "2.2": !join [ *FRAMEWORK, "/", "buildspec-2-2.yml" ]
   "2.1": !join [ *FRAMEWORK, "/", "buildspec-2-1.yml" ]
   "2.0": !join [ *FRAMEWORK, "/", "buildspec-2-0.yml" ]
-  "1.15": !join [ *FRAMEWORK, "/", "buildspec-1-15.yml" ]
   "2.3-eia": !join [ *FRAMEWORK, "/", "buildspec-2-3-eia.yml" ]
   "2.0-eia": !join [ *FRAMEWORK, "/", "buildspec-2-0-eia.yml" ]
