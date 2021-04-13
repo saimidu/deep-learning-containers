@@ -14,7 +14,7 @@ current_eia_versions:
 current_neuron_versions:
   # N = 1
   # With N parallel pipelines, create entries for the N latest framework versions
-  - "1.15-neuron"
+  - "2.3-neuron"
 buildspecs:
   # Specify the dedicated buildspec file for each framework version here
   # Ensure that the key is exactly the same as the entry (if any) in the "current_versions" lists above
@@ -26,4 +26,3 @@ buildspecs:
   "1.15": !join [ *FRAMEWORK, "/", "buildspec-1-15.yml" ]
   "2.3-eia": !join [ *FRAMEWORK, "/", "buildspec-2-3-eia.yml" ]
   "2.0-eia": !join [ *FRAMEWORK, "/", "buildspec-2-0-eia.yml" ]
-  "1.15-neuron": !join [ *FRAMEWORK, "/", "buildspec-1-15-neuron.yml" ]

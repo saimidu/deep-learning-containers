@@ -25,6 +25,7 @@ def main():
     build_context = os.getenv("BUILD_CONTEXT")
     ei_dedicated = os.getenv("EIA_DEDICATED") == "True"
     neuron_dedicated = os.getenv("NEURON_DEDICATED") == "True"
+    pipeline_index = os.getenv("FRAMEWORK_PIPELINE_INDEX", 0)
 
     # A general will work if in non-EI and non-NEURON mode and its framework not been disabled
     general_builder_enabled = (
@@ -52,10 +53,16 @@ def main():
         utils.build_setup(
             args.framework, device_types=device_types, image_types=image_types, py_versions=py_versions,
         )
-        # TODO: Insert code here to figure out which framework version buildspec file should be used.
-        #       For now, treat framework version at the top of the list as the PR framework version.
-        # framework_version_buildspec = utils.get_framework_version_from_environment(arg.buildspec)
-        image_builder(args.buildspec)
+        fw_version_buildspec_config = {
+            "general_build": general_builder_enabled,
+            "ei_build": ei_builder_enabled,
+            "neuron_build": neuron_builder_enabled,
+        }
+        framework_version_buildspec = utils.get_framework_version_from_environment(
+            args.buildspec, pipeline_index, **fw_version_buildspec_config
+        )
+        if framework_version_buildspec:
+            image_builder(framework_version_buildspec)
 
 
 if __name__ == "__main__":

@@ -12,17 +12,23 @@ distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 ANY KIND, either express or implied. See the License for the specific
 language governing permissions and limitations under the License.
 """
-import os
-import re
 import json
 import logging
+import os
+import re
 import sys
+
+from packaging.version import Version
+
 import boto3
+
+from botocore.exceptions import ClientError
+from invoke.context import Context
+
 import constants
 
+from buildspec import Buildspec
 from config import build_config
-from invoke.context import Context
-from botocore.exceptions import ClientError
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -483,3 +489,40 @@ def set_test_env(images, images_env="DLC_IMAGES", **kwargs):
 def get_codebuild_project_name():
     # Default value for codebuild project name is "local_test" when run outside of CodeBuild
     return os.getenv("CODEBUILD_BUILD_ID", "local_test").split(":")[0]
+
+
+def get_framework_version_from_environment(
+    framework_buildspec_path, pipeline_index, general_build=False, ei_build=False, neuron_build=False
+):
+    """
+    Using the framework buildspec file, find the framework version for DLCs to be built, or default to none.
+
+    :param framework_buildspec_path: str Path to the framework buildspec file - <framework>/buildspec.yml
+    :param pipeline_index: int Value of FRAMEWORK_PIPELINE_INDEX env variable
+    :param general_build: bool True if CB job is dedicated to building general dockerfiles for a framework
+    :param ei_build: bool True if CB job is dedicated to building EIA dockerfiles for a framework
+    :param neuron_build: bool True if CB job is dedicated to building Neuron dockerfiles for a framework
+    :return: dict Framework version and framework-version-buildspec to be used for build
+    """
+    framework_buildspec = Buildspec()
+    framework_buildspec.load(framework_buildspec_path)
+    fw_version_buildspec_file_paths = framework_buildspec.get("buildspecs")
+    framework_version_list = (
+        framework_buildspec.get("current_versions", [])
+        if general_build
+        else framework_buildspec.get("current_eia_versions", [])
+        if ei_build
+        else framework_buildspec.get("current_neuron_versions", [])
+        if neuron_build
+        else []
+    )
+    if not framework_version_list or pipeline_index >= len(framework_version_list):
+        return {}
+    sorted_fw_versions = sorted(framework_version_list, key=Version, reverse=True)
+    framework_version_key = sorted_fw_versions[pipeline_index]
+    framework_version = re.search(r"\d+\.\d+", framework_version_key).group()
+    framework_version_buildspec = fw_version_buildspec_file_paths.get(framework_version_key)
+    return {
+        "framework_version": framework_version,
+        "framework_version_buildspec": framework_version_buildspec,
+    }
