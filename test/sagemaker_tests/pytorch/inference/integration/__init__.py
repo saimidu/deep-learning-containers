@@ -25,6 +25,9 @@ gpu_sub_dir = 'model_gpu'
 eia_sub_dir = 'model_eia'
 neuron_sub_dir = 'model_neuron'
 code_sub_dir = 'code'
+default_sub_dir = 'default_model'
+default_sub_eia_dir = 'default_model_eia'
+default_sub_traced_resnet_dir = 'default_traced_resnet'
 
 model_cpu_dir = os.path.join(mnist_path, cpu_sub_dir)
 mnist_cpu_script = os.path.join(model_cpu_dir, code_sub_dir ,'mnist.py')
@@ -40,6 +43,15 @@ resnet_neuron_script = os.path.join(model_neuron_dir, code_sub_dir, 'resnet18.py
 resnet_neuron_input = os.path.join(model_neuron_dir, 'cat.jpg')
 resnet_neuron_image_list = os.path.join(model_neuron_dir, 'imagenet1000_clsidx_to_labels.txt')
 call_model_fn_once_script = os.path.join(resources_path, code_sub_dir, 'call_model_fn_once.py')
+
+default_model_dir = os.path.join(resnet_path, default_sub_dir)
+default_model_script = os.path.join(default_model_dir, code_sub_dir, "resnet18.py")
+
+default_traced_resnet_dir = os.path.join(resnet_path, default_sub_traced_resnet_dir)
+default_traced_resnet_script = os.path.join(default_traced_resnet_dir, code_sub_dir, "resnet18.py")
+
+default_model_eia_dir = os.path.join(mnist_path, default_sub_eia_dir)
+default_model_eia_script = os.path.join(default_model_eia_dir, code_sub_dir, "mnist.py")
 
 ROLE = "dummy/unused-role"
 DEFAULT_TIMEOUT = 20
