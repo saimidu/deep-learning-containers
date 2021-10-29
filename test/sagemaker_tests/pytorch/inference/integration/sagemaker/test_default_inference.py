@@ -37,25 +37,25 @@ from .... import invoke_pytorch_helper_function
 @pytest.mark.model("resnet18")
 @pytest.mark.processor("cpu")
 @pytest.mark.cpu_test
-def test_default_inference_cpu(sagemaker_session, image_uri, instance_type):
+def test_default_inference_cpu(framework_version, sagemaker_session, ecr_image, instance_type):
     instance_type = instance_type or "ml.c4.xlarge"
     # Scripted model is serialized with torch.jit.save().
     # Default inference test doesn't need to instantiate model definition
     default_model_tar = os.path.join(default_model_dir, "model.tar.gz")
     _test_default_inference(
-        sagemaker_session, image_uri, instance_type, default_model_tar, default_model_script
+        framework_version, sagemaker_session, ecr_image, instance_type, default_model_tar, default_model_script
     )
 
 @pytest.mark.model("resnet18")
 @pytest.mark.processor("gpu")
 @pytest.mark.gpu_test
-def test_default_inference_gpu(sagemaker_session, image_uri, instance_type):
+def test_default_inference_gpu(framework_version, sagemaker_session, ecr_image, instance_type):
     instance_type = instance_type or "ml.p2.xlarge"
     # Scripted model is serialized with torch.jit.save().
     # Default inference test doesn't need to instantiate model definition
     default_model_tar = os.path.join(default_model_dir, "model.tar.gz")
     _test_default_inference(
-        sagemaker_session, image_uri, instance_type, default_model_tar, default_model_script
+        framework_version, sagemaker_session, ecr_image, instance_type, default_model_tar, default_model_script
     )
 
 
@@ -65,14 +65,15 @@ def test_default_inference_gpu(sagemaker_session, image_uri, instance_type):
 @pytest.mark.model("mnist")
 @pytest.mark.processor("eia")
 @pytest.mark.eia_test
-def test_default_inference_eia(sagemaker_session, image_uri, instance_type, accelerator_type):
+def test_default_inference_eia(framework_version, sagemaker_session, ecr_image, instance_type, accelerator_type):
     instance_type = instance_type or "ml.c4.xlarge"
     # Scripted model is serialized with torch.jit.save().
     # Default inference test doesn't need to instantiate model definition
     default_model_eia_tar = os.path.join(default_model_eia_dir, "model.tar.gz")
     _test_default_inference(
+        framework_version,
         sagemaker_session,
-        image_uri,
+        ecr_image,
         instance_type,
         default_model_eia_tar,
         default_model_eia_script,
@@ -83,14 +84,15 @@ def test_default_inference_eia(sagemaker_session, image_uri, instance_type, acce
 @pytest.mark.model("resnet18")
 @pytest.mark.processor("cpu")
 @pytest.mark.cpu_test
-def test_default_inference_any_model_name_cpu(sagemaker_session, image_uri, instance_type):
+def test_default_inference_any_model_name_cpu(framework_version, sagemaker_session, ecr_image, instance_type):
     instance_type = instance_type or "ml.c4.xlarge"
     # Scripted model is serialized with torch.jit.save().
     # Default inference test doesn't need to instantiate model definition
     default_model_traced_resnet18_tar = os.path.join(default_traced_resnet_dir, "traced_resnet18.tar.gz")
     _test_default_inference(
+        framework_version,
         sagemaker_session,
-        image_uri,
+        ecr_image,
         instance_type,
         default_model_traced_resnet18_tar,
         default_traced_resnet_script,
@@ -100,14 +102,15 @@ def test_default_inference_any_model_name_cpu(sagemaker_session, image_uri, inst
 @pytest.mark.model("resnet18")
 @pytest.mark.processor("gpu")
 @pytest.mark.gpu_test
-def test_default_inference_any_model_name_gpu(sagemaker_session, image_uri, instance_type):
+def test_default_inference_any_model_name_gpu(framework_version, sagemaker_session, ecr_image, instance_type):
     instance_type = instance_type or "ml.p2.xlarge"
     # Scripted model is serialized with torch.jit.save().
     # Default inference test doesn't need to instantiate model definition
     default_model_traced_resnet18_tar = os.path.join(default_traced_resnet_dir, "traced_resnet18.tar.gz")
     _test_default_inference(
+        framework_version,
         sagemaker_session,
-        image_uri,
+        ecr_image,
         instance_type,
         default_model_traced_resnet18_tar,
         default_traced_resnet_script,
@@ -115,7 +118,7 @@ def test_default_inference_any_model_name_gpu(sagemaker_session, image_uri, inst
 
 
 def _test_default_inference(
-    sagemaker_session, image_uri, instance_type, model_tar, mnist_script, accelerator_type=None
+    framework_version, sagemaker_session, image_uri, instance_type, model_tar, mnist_script, accelerator_type=None
 ):
     endpoint_name = sagemaker.utils.unique_name_from_base("sagemaker-pytorch-serving")
 
@@ -125,6 +128,7 @@ def _test_default_inference(
     )
 
     pytorch = PyTorchModel(
+        framework_version=framework_version,
         model_data=model_data,
         role="SageMakerRole",
         predictor_cls=RealTimePredictor if not accelerator_type else PyTorchPredictor,
