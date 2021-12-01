@@ -192,7 +192,7 @@ def test_resnet_with_inference_handler(boto_session, image_uri, instance_type, r
         kitten_url = "https://s3.amazonaws.com/model-server/inputs/kitten.jpg"
         kitten_local_path = "kitten.jpg"
         urllib.request.urlretrieve(kitten_url, kitten_local_path)
-        with open(kitten_local_path, "r") as f:
+        with open(kitten_local_path, "rb") as f:
             kitten_image = f.read()
 
         runtime_client = sagemaker_session.sagemaker_runtime_client
