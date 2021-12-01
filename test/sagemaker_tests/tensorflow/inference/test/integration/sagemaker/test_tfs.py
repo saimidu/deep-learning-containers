@@ -10,6 +10,7 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
+import json
 import os
 
 import numpy as np
@@ -199,6 +200,6 @@ def test_resnet_with_inference_handler(boto_session, image_uri, instance_type, r
         response = runtime_client.invoke_endpoint(
             EndpointName=endpoint_name, ContentType='application/x-image', Body=kitten_image
         )
-        result = response['Body'].read().decode('ascii')
+        result = json.loads(response['Body'].read().decode('ascii'))
 
         assert len(result["outputs"]["predictions"]["floatVal"]) == 1000
