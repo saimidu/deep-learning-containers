@@ -10,4 +10,4 @@ fabric
 retrying
 gitpython
 toml
-urllib
+urllib3
