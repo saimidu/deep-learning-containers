@@ -13,6 +13,7 @@
 import json
 import os
 import random
+import tarfile
 import time
 
 import boto3
@@ -76,6 +77,8 @@ NO_P4_REGIONS = [
     "eu-south-1",
     "af-south-1",
 ]
+
+RESOURCES_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "resources"))
 
 
 def pytest_addoption(parser):
@@ -254,3 +257,15 @@ def disable_test(request):
 
     if build_name and version and _is_test_disabled(test_name, build_name, version):
         pytest.skip(f"Skipping {test_name} test because it has been disabled.")
+
+
+@pytest.fixture(scope="session")
+def resnet_model_tar_path():
+    model_path = os.path.join(RESOURCES_PATH, "models", "resnet50_v1")
+    model_tar_path = os.path.join(model_path, "model.tar.gz")
+    if os.path.exists(model_tar_path):
+        os.remove(model_tar_path)
+    with tarfile.open(model_tar_path, "w:gz") as model_tar:
+        model_tar.add(os.path.join(model_path, "code"))
+        model_tar.add(os.path.join(model_path, "model"))
+    return model_tar_path
