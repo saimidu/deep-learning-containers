@@ -266,6 +266,6 @@ def resnet_model_tar_path():
     if os.path.exists(model_tar_path):
         os.remove(model_tar_path)
     with tarfile.open(model_tar_path, "w:gz") as model_tar:
-        model_tar.add(os.path.join(model_path, "code"))
-        model_tar.add(os.path.join(model_path, "model"))
+        model_tar.add(os.path.join(model_path, "code"), arcname="code")
+        model_tar.add(os.path.join(model_path, "model"), arcname="model")
     return model_tar_path
