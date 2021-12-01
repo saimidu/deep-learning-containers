@@ -202,4 +202,4 @@ def test_resnet_with_inference_handler(boto_session, image_uri, instance_type, r
         )
         result = json.loads(response['Body'].read().decode('ascii'))
 
-        assert len(result["outputs"]["predictions"]["floatVal"]) == 1000
+        assert len(result["outputs"]["probabilities"]["floatVal"]) == 3
