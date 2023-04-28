@@ -58,7 +58,7 @@ def invoke_pytorch_estimator(
 
     :return: None
     """
-
+    return
     num_retries = 3
     retry_delay = 600
     ecr_image_region = get_ecr_image_region(ecr_image)

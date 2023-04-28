@@ -145,6 +145,19 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "efa(): explicitly mark to run efa tests")
+    config.addinivalue_line("markers", "integration(name): add info about feature tested")
+    config.addinivalue_line("markers", "model(name): add info about model tested")
+    config.addinivalue_line("markers", "processor(name): add info about processor tested")
+    config.addinivalue_line("markers", "multinode(name): add info about number of nodes used")
+    config.addinivalue_line("markers", "skip_trcomp_containers(name): skip trcomp tests")
+    config.addinivalue_line("markers", "skip_py2_containers(name): skip py2 images")
+    config.addinivalue_line("markers", "skip_s3plugin_test(name): skip s3 plugin test")
+    config.addinivalue_line("markers", "skip_cpu(name): skip cpu tests")
+    config.addinivalue_line("markers", "skip_gpu(name): skip gpu tests")
+    config.addinivalue_line("markers", "neuronx_test(name): explicitly mark to run neuronx tests")
+    config.addinivalue_line("markers", "skip_inductor_test(name): skip inductor test")
+    config.addinivalue_line("markers", "deploy_test(name): explicitly mark deploy tests")
+    config.addinivalue_line("markers", "skip_test_in_region(name): skip tests in certain regions")
 
 
 def pytest_runtest_setup(item):
@@ -517,7 +530,9 @@ def skip_test_successfully_executed_before(request):
     test_name = request.node.name
     lastfailed = request.config.cache.get("cache/lastfailed", None)
 
-    if lastfailed is not None and not any(
-        test_name in failed_test_name for failed_test_name in lastfailed.keys()
-    ):
-        pytest.skip(f"Skipping {test_name} because it was successfully executed for this commit")
+    if lastfailed is not None:
+        print(f"----- For {test_name}, lastfailed = {lastfailed} -----")
+        if not any(test_name in failed_test_name for failed_test_name in lastfailed.keys()):
+            pytest.skip(
+                f"Skipping {test_name} because it was successfully executed for this commit"
+            )

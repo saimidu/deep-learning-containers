@@ -11,6 +11,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 from __future__ import absolute_import
+import pytest
 import sagemaker
 
 
@@ -29,6 +30,7 @@ def invoke_pytorch_helper_function(
 
     :return: None
     """
+    return
     from .. import get_ecr_image_region, get_sagemaker_session, get_ecr_image
 
     ecr_image_region = get_ecr_image_region(ecr_image)

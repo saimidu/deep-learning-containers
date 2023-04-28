@@ -163,7 +163,7 @@ class PytestCache:
 
     def __upload_cache_to_s3(self, local_file, s3_file):
         if os.path.exists(f"{local_file}"):
-            LOGGER.info(f"Uploading current execution result to {s3_file}")
+            LOGGER.info(f"Uploading current execution result {local_file} to {s3_file}")
             try:
                 self.s3_client.upload_file(local_file, self.bucket_name, s3_file)
                 LOGGER.info(f"Cache file uploaded")
@@ -192,7 +192,7 @@ class PytestCache:
         return os.path.exists(file_path) and os.stat(file_path).st_size != 0
 
     def __download_cache_from_s3(self, s3_file, local_file):
-        LOGGER.info(f"Downloading previous executions cache: {s3_file}")
+        LOGGER.info(f"Downloading previous executions cache {s3_file} to {local_file}")
         try:
             self.s3_client.download_file(self.bucket_name, f"{s3_file}", f"{local_file}")
         except Exception as e:

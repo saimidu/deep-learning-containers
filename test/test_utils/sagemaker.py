@@ -402,7 +402,7 @@ def execute_sagemaker_remote_tests(process_index, image, global_pytest_cache, py
     with context.cd(path):
         context.run(f"virtualenv {tag}")
         with context.prefix(f"source {tag}/bin/activate"):
-            context.run("pip install -r requirements.txt", warn=True)
+            context.run("pip install -q -r requirements.txt", warn=True)
             pytest_cache_util.download_pytest_cache_from_s3_to_local(
                 path, **pytest_cache_params, custom_cache_directory=str(process_index)
             )
