@@ -20,19 +20,21 @@ import re
 
 from copy import deepcopy
 
-import constants
-import utils
 import boto3
 import itertools
 
-from codebuild_environment import get_codebuild_project_name, get_cloned_folder_path
-from config import parse_dlc_developer_configs, is_build_enabled
-from context import Context
-from metrics import Metrics
-from image import DockerImage
-from common_stage_image import CommonStageImage
-from buildspec import Buildspec
-from output import OutputFormatter
+import utils
+
+from dlc_build_utils import constants
+from dlc_build_utils.buildspec import Buildspec
+from dlc_build_utils.codebuild_environment import get_codebuild_project_name, get_cloned_folder_path
+from dlc_build_utils.config import parse_dlc_developer_configs, is_build_enabled
+from dlc_build_utils.context import Context
+
+from .metrics import Metrics
+from .image import DockerImage
+from .common_stage_image import CommonStageImage
+from .output import OutputFormatter
 
 FORMATTER = OutputFormatter(constants.PADDING)
 build_context = os.getenv("BUILD_CONTEXT")
@@ -40,7 +42,8 @@ build_context = os.getenv("BUILD_CONTEXT")
 
 def is_nightly_build_context():
     """
-    Returns True if image builder is running in a nightly context or nightly PR test mode. Otherwise returns False
+    Returns True if image builder is running in a nightly context or nightly PR test mode.
+    Otherwise returns False
     :return: <bool> True or False
     """
     return (
@@ -86,7 +89,9 @@ def image_builder(buildspec, image_types=[], device_types=[]):
     ):
         os.system("echo login into public ECR")
         os.system(
-            "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 763104351884.dkr.ecr.us-west-2.amazonaws.com"
+            "aws ecr get-login-password --region us-west-2 | "
+            "docker login --username AWS --password-stdin "
+            "763104351884.dkr.ecr.us-west-2.amazonaws.com"
         )
 
     for image_name, image_config in BUILDSPEC["images"].items():
@@ -278,9 +283,10 @@ def image_builder(buildspec, image_types=[], device_types=[]):
         )
 
         ##### Create Common stage docker object #####
-        # If for a pre_push stage image we create a common stage image, then we do not push the pre_push stage image
-        # to the repository. Instead, we just push its common stage image to the repository. Therefore,
-        # inside function get_common_stage_image_object we make pre_push_stage_image_object non pushable.
+        # If for a pre_push stage image we create a common stage image, then we do not push the
+        # pre_push stage image to the repository. Instead, we just push its common stage image to
+        # the repository. Therefore, inside function get_common_stage_image_object we make
+        # pre_push_stage_image_object non pushable.
         common_stage_image_object = generate_common_stage_image_object(
             pre_push_stage_image_object, image_tag
         )
@@ -377,12 +383,14 @@ def process_images(pre_push_image_list, pre_push_image_type="Pre-push"):
 
 def generate_common_stage_image_object(pre_push_stage_image_object, image_tag):
     """
-    Creates a common stage image object for a pre_push stage image. If for a pre_push stage image we create a common
-    stage image, then we do not push the pre_push stage image to the repository. Instead, we just push its common stage
-    image to the repository. Therefore, inside the function pre_push_stage_image_object is made NON-PUSHABLE.
+    Creates a common stage image object for a pre_push stage image. If for a pre_push stage image we
+    create a common stage image, then we do not push the pre_push stage image to the repository.
+    Instead, we just push its common stage image to the repository. Therefore, inside the function
+    pre_push_stage_image_object is made NON-PUSHABLE.
 
     :param pre_push_stage_image_object: DockerImage, an object of class DockerImage
-    :return: CommonStageImage, an object of class CommonStageImage. CommonStageImage inherits DockerImage.
+    :return: CommonStageImage, an object of class CommonStageImage.
+            CommonStageImage inherits DockerImage.
     """
     common_stage_info = deepcopy(pre_push_stage_image_object.info)
     common_stage_info["extra_build_args"].update(
@@ -493,7 +501,8 @@ def build_images(images, make_dummy_boto_client=False):
     :param images: list[DockerImage]
     :param make_dummy_boto_client: bool, specifies if a dummy client should be declared or not.
 
-    TODO: The parameter make_dummy_boto_client should be removed when get_dummy_boto_client method is removed.
+    TODO: The parameter make_dummy_boto_client should be removed when get_dummy_boto_client method
+          is removed.
     """
     THREADS = {}
     # In the context of the ThreadPoolExecutor each instance of image.build submitted
@@ -512,8 +521,9 @@ def build_images(images, make_dummy_boto_client=False):
 def get_dummy_boto_client():
     """
     Makes a dummy boto3 client to ensure that boto3 clients behave in a thread safe manner.
-    In absence of this method, the behaviour documented in https://github.com/boto/boto3/issues/1592 is observed.
-    Once https://github.com/boto/boto3/issues/1592 is resolved, this method can be removed.
+    In absence of this method, the behaviour documented in https://github.com/boto/boto3/issues/1592
+    is observed. Once https://github.com/boto/boto3/issues/1592 is resolved, this method can
+    be removed.
 
     :return: BotocoreClientSTS
     """

@@ -2,11 +2,12 @@ import argparse
 import os
 import re
 
-import utils
-import constants
+from dlc_build_utils import constants
+from dlc_build_utils.codebuild_environment import get_codebuild_project_name
+from dlc_build_utils.config import parse_dlc_developer_configs, get_buildspec_override
 
-from codebuild_environment import get_codebuild_project_name
-from config import parse_dlc_developer_configs, get_buildspec_override
+import utils
+
 from image_builder import image_builder
 
 

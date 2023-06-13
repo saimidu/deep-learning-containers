@@ -17,9 +17,10 @@ from datetime import datetime
 from docker import APIClient
 from docker import DockerClient
 
-import constants
 import logging
 import json
+
+from dlc_build_utils import constants
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)

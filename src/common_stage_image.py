@@ -13,8 +13,8 @@ ANY KIND, either express or implied. See the License for the specific
 language governing permissions and limitations under the License.
 """
 
-from codebuild_environment import get_cloned_folder_path
-from context import Context
+from dlc_build_utils.codebuild_environment import get_cloned_folder_path
+from dlc_build_utils.context import Context
 from image import DockerImage
 from utils import generate_safety_report_for_image
 
@@ -25,9 +25,9 @@ class CommonStageImage(DockerImage):
     """
     This class is especially designed to handle the build process for CommonStageImages.
     All the functionality - either safety scan report, ecr scan report, etc. - that is especially
-    required to run the miscellaneous_dockerfiles/Dockerfile.common should go into this file. As of now,
-    this class takes care of generating a safety report from a pre_push_image and then uses this
-    safety report for creating a context for Dockerfile.common
+    required to run the miscellaneous_dockerfiles/Dockerfile.common should go into this file. As of
+    now, this class takes care of generating a safety report from a pre_push_image and then uses
+    this safety report for creating a context for Dockerfile.common
     """
 
     def update_pre_build_configuration(self):
@@ -60,8 +60,8 @@ class CommonStageImage(DockerImage):
 
     def generate_common_stage_context(self, safety_report_path, tarfile_name="common-stage-file"):
         """
-        For CommonStageImage, build context is built once the safety report is generated. This is because
-        the Dockerfile.common uses this safety report to COPY the report into the image.
+        For CommonStageImage, build context is built once the safety report is generated. This is
+        because the Dockerfile.common uses this safety report to COPY the report into the image.
         """
         artifacts = {
             "safety_report": {"source": safety_report_path, "target": "safety_report.json"},
