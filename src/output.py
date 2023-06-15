@@ -20,7 +20,8 @@ from collections import defaultdict
 
 import pyfiglet
 import reprint
-import constants
+
+from dlc_build_utils import constants
 
 
 class OutputFormatter:

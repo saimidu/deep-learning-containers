@@ -1,22 +1,19 @@
 import os
 import pytest
 
-import test.test_utils.ec2 as ec2_utils
+import dlc_test_utils
 
-from test import test_utils
-from test.test_utils import CONTAINER_TESTS_PREFIX, get_framework_and_version_from_tag
-from test.test_utils.ec2 import (
+from dlc_test_utils import CONTAINER_TESTS_PREFIX, LOGGER, get_framework_and_version_from_tag
+from dlc_test_utils import ec2 as ec2_utils
+from dlc_test_utils.ec2 import (
     get_ec2_instance_type,
     execute_ec2_inference_test,
     get_ec2_accelerator_type,
 )
-from test.dlc_tests.conftest import LOGGER
-
 
 SQUEEZENET_MODEL = "squeezenet"
 BERT_MODEL = "bert_sst"
 RESNET_EIA_MODEL = "resnet-152-eia"
-
 
 MX_EC2_GPU_INSTANCE_TYPE = get_ec2_instance_type(default="g3.8xlarge", processor="gpu")
 MX_EC2_CPU_INSTANCE_TYPE = get_ec2_instance_type(default="c5.4xlarge", processor="cpu")
@@ -41,7 +38,7 @@ MX_TELEMETRY_CMD = os.path.join(CONTAINER_TESTS_PREFIX, "test_mx_dlc_telemetry_t
 
 @pytest.mark.model("mxnet-resnet-neuron")
 @pytest.mark.parametrize(
-    "ec2_instance_ami", [test_utils.NEURON_UBUNTU_18_BASE_DLAMI_US_WEST_2], indirect=True
+    "ec2_instance_ami", [dlc_test_utils.NEURON_UBUNTU_18_BASE_DLAMI_US_WEST_2], indirect=True
 )
 @pytest.mark.parametrize("ec2_instance_type", MX_EC2_NEURON_INSTANCE_TYPE, indirect=True)
 def test_ec2_mxnet_inference_neuron(mxnet_inference_neuron, ec2_connection, region):
@@ -62,7 +59,7 @@ def test_ec2_mxnet_inference_neuron(mxnet_inference_neuron, ec2_connection, regi
 def test_ec2_mxnet_squeezenet_inference_gpu(
     mxnet_inference, ec2_connection, region, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(mxnet_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(mxnet_inference, ec2_instance_type):
         pytest.skip(
             f"Image {mxnet_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -77,7 +74,7 @@ def test_ec2_mxnet_squeezenet_inference_gpu(
 def test_ec2_mxnet_gluonnlp_inference_gpu(
     mxnet_inference, ec2_connection, region, gpu_only, py3_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(mxnet_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(mxnet_inference, ec2_instance_type):
         pytest.skip(
             f"Image {mxnet_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -128,7 +125,7 @@ def test_ec2_mxnet_resnet_inferencei_eia_gpu(mxnet_inference_eia, ec2_connection
 
 @pytest.mark.model(SQUEEZENET_MODEL)
 @pytest.mark.parametrize("ec2_instance_type", MX_EC2_GRAVITON_INSTANCE_TYPE, indirect=True)
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
 def test_ec2_mxnet_inference_graviton_cpu(
     mxnet_inference_graviton, ec2_connection, region, cpu_only
 ):
@@ -168,7 +165,7 @@ def run_ec2_mxnet_inference(
     repo_name, image_tag = image_uri.split("/")[-1].split(":")
     container_name = f"{repo_name}-{image_tag}-ec2-{container_tag}"
     docker_cmd = "nvidia-docker" if "gpu" in image_uri else "docker"
-    mms_inference_cmd = test_utils.get_inference_run_command(image_uri, model_name, processor)
+    mms_inference_cmd = dlc_test_utils.get_inference_run_command(image_uri, model_name, processor)
     if processor == "neuron":
         docker_run_cmd = (
             f"{docker_cmd} run -itd --name {container_name}"
@@ -187,19 +184,19 @@ def run_ec2_mxnet_inference(
         LOGGER.info(docker_run_cmd)
         ec2_connection.run(docker_run_cmd, hide=True)
         if model_name == SQUEEZENET_MODEL:
-            inference_result = test_utils.request_mxnet_inference(
+            inference_result = dlc_test_utils.request_mxnet_inference(
                 port=target_port, connection=ec2_connection, model="squeezenet"
             )
         elif model_name == BERT_MODEL:
-            inference_result = test_utils.request_mxnet_inference_gluonnlp(
+            inference_result = dlc_test_utils.request_mxnet_inference_gluonnlp(
                 port=target_port, connection=ec2_connection
             )
         elif model_name == RESNET_EIA_MODEL:
-            inference_result = test_utils.request_mxnet_inference(
+            inference_result = dlc_test_utils.request_mxnet_inference(
                 port=target_port, connection=ec2_connection, model=model_name
             )
         elif model_name == "mxnet-resnet-neuron":
-            inference_result = test_utils.request_mxnet_inference(
+            inference_result = dlc_test_utils.request_mxnet_inference(
                 port=target_port, connection=ec2_connection, model=model_name
             )
         assert (
@@ -217,7 +214,7 @@ def run_ec2_mxnet_inference(
 def test_mxnet_inference_telemetry_gpu(
     mxnet_inference, ec2_connection, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(mxnet_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(mxnet_inference, ec2_instance_type):
         pytest.skip(
             f"Image {mxnet_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -238,6 +235,6 @@ def test_mxnet_inference_telemetry_cpu(mxnet_inference, ec2_connection, cpu_only
 @pytest.mark.integration("telemetry")
 @pytest.mark.model("N/A")
 @pytest.mark.parametrize("ec2_instance_type", MX_EC2_GRAVITON_INSTANCE_TYPE, indirect=True)
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
 def test_mxnet_inference_telemetry_graviton_cpu(mxnet_inference_graviton, ec2_connection, cpu_only):
     execute_ec2_inference_test(ec2_connection, mxnet_inference_graviton, MX_TELEMETRY_CMD)

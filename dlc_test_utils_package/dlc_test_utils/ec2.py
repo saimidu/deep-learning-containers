@@ -21,7 +21,7 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from test.test_utils import is_pr_context, is_mainline_context, get_synapseai_version_from_tag
+from . import is_pr_context, is_mainline_context, get_synapseai_version_from_tag
 from . import DEFAULT_REGION, P3DN_REGION, P4DE_REGION, UL_AMI_LIST, BENCHMARK_RESULTS_S3_BUCKET
 
 EC2_INSTANCE_ROLE_NAME = "ec2TestInstanceRole"

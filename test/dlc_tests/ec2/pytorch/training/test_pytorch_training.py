@@ -4,16 +4,16 @@ from packaging.version import Version
 from packaging.specifiers import SpecifierSet
 import pytest
 
-import test.test_utils as test_utils
-import test.test_utils.ec2 as ec2_utils
+import dlc_test_utils
 
-from test.test_utils import (
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
     UBUNTU_18_HPU_DLAMI_US_WEST_2,
     get_framework_and_version_from_tag,
     get_cuda_version_from_tag,
 )
-from test.test_utils.ec2 import execute_ec2_training_test, get_ec2_instance_type
+from dlc_test_utils import ec2 as ec2_utils
+from dlc_test_utils.ec2 import execute_ec2_training_test, get_ec2_instance_type
 
 
 PT_STANDALONE_CMD = os.path.join(CONTAINER_TESTS_PREFIX, "pytorch_tests", "testPyTorchStandalone")
@@ -63,7 +63,7 @@ PT_EC2_NEURON_INF2_INSTANCE_TYPE = get_ec2_instance_type(
 )
 
 
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_NEURON_TRN1_INSTANCE_TYPE, indirect=True)
 @pytest.mark.integration("pytorch_neuronx_sanity_test")
 @pytest.mark.neuronx_test
@@ -72,7 +72,7 @@ def test_pytorch_allreduce_neuronx(pytorch_training_neuronx, ec2_connection):
     execute_ec2_training_test(ec2_connection, pytorch_training_neuronx, PT_NEURON_ALLREDUCE_CMD)
 
 
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_NEURON_TRN1_INSTANCE_TYPE, indirect=True)
 @pytest.mark.integration("pytorch_neuronx_sanity_test")
 @pytest.mark.neuronx_test
@@ -81,7 +81,7 @@ def test_pytorch_train_mlp_neuronx(pytorch_training_neuronx, ec2_connection):
     execute_ec2_training_test(ec2_connection, pytorch_training_neuronx, PT_NEURON_MLP_CMD)
 
 
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_NEURON_INF2_INSTANCE_TYPE, indirect=True)
 @pytest.mark.integration("pytorch_neuronx_sanity_test")
 @pytest.mark.neuronx_test
@@ -90,7 +90,7 @@ def test_pytorch_allreduce_neuronx_inf2(pytorch_training_neuronx, ec2_connection
     execute_ec2_training_test(ec2_connection, pytorch_training_neuronx, PT_NEURON_ALLREDUCE_CMD)
 
 
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_NEURON_INF2_INSTANCE_TYPE, indirect=True)
 @pytest.mark.integration("pytorch_neuronx_sanity_test")
 @pytest.mark.neuronx_test
@@ -104,7 +104,7 @@ def test_pytorch_train_mlp_neuronx_inf2(pytorch_training_neuronx, ec2_connection
 @pytest.mark.model("N/A")
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_GPU_INSTANCE_TYPE, indirect=True)
 def test_pytorch_standalone_gpu(pytorch_training, ec2_connection, gpu_only, ec2_instance_type):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -123,7 +123,7 @@ def test_pytorch_standalone_cpu(pytorch_training, ec2_connection, cpu_only):
 @pytest.mark.model("mnist")
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_GPU_INSTANCE_TYPE, indirect=True)
 def test_pytorch_train_mnist_gpu(pytorch_training, ec2_connection, gpu_only, ec2_instance_type):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -135,7 +135,7 @@ def test_pytorch_train_mnist_gpu(pytorch_training, ec2_connection, gpu_only, ec2
 @pytest.mark.integration("inductor")
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_GPU_INSTANCE_TYPE, indirect=True)
 def test_pytorch_train_bert_gpu(pytorch_training, ec2_connection, gpu_only, ec2_instance_type):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -155,7 +155,7 @@ def test_pytorch_train_mnist_cpu(pytorch_training, ec2_connection, cpu_only):
 def test_pytorch_linear_regression_gpu(
     pytorch_training, ec2_connection, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -184,7 +184,7 @@ def test_pytorch_train_dgl_gpu(
         and image_cuda_version == "cu113"
     ):
         pytest.skip("ecs test for DGL gpu fails for pt 1.10")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -211,7 +211,7 @@ def test_pytorch_with_horovod(pytorch_training, ec2_connection, gpu_only, ec2_in
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_training)
     if "trcomp" in pytorch_training and Version(image_framework_version) in SpecifierSet("<2.0"):
         pytest.skip(f"Image {pytorch_training} doesn't package horovod. Hence test is skipped.")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -233,7 +233,7 @@ def test_pytorch_with_horovod_inductor(
         pytest.skip("skipping inductor related test on g3 instance")
     if "trcomp" in pytorch_training and Version(image_framework_version) in SpecifierSet("<2.0"):
         pytest.skip(f"Image {pytorch_training} doesn't package horovod. Hence test is skipped.")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -249,7 +249,7 @@ def test_pytorch_gloo_gpu(pytorch_training, ec2_connection, gpu_only, py3_only, 
     """
     Tests gloo backend
     """
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -275,7 +275,7 @@ def test_pytorch_gloo_inductor_gpu(
     """
     if ec2_instance_type.startswith("g3"):
         pytest.skip("skipping inductor related test on g3 instance")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -313,7 +313,7 @@ def test_pytorch_nccl(pytorch_training, ec2_connection, gpu_only, py3_only, ec2_
     """
     if ec2_instance_type.startswith("g3"):
         pytest.skip("skipping inductor related test on g3 instance")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -336,7 +336,7 @@ def test_pytorch_nccl_inductor(
     """
     if ec2_instance_type.startswith("g3"):
         pytest.skip("skipping inductor related test on g3 instance")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -368,7 +368,7 @@ def test_pytorch_nccl_version(
         pytest.skip(
             f"Image {pytorch_training} should use the system nccl through xla. Hence the test is skipped."
         )
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -396,7 +396,7 @@ def test_pytorch_mpi_gpu(
     version_skip(pytorch_training, "2.0.0")
     if "trcomp" in pytorch_training:
         pytest.skip(f"Image {pytorch_training} is incompatible with distribution type MPI.")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -430,7 +430,7 @@ def test_pytorch_mpi_inductor_gpu(
         pytest.skip("skipping inductor related test on g3 instance")
     if "trcomp" in pytorch_training:
         pytest.skip(f"Image {pytorch_training} is incompatible with distribution type MPI.")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -471,7 +471,7 @@ def test_pytorch_mpi_cpu(
 @pytest.mark.model("N/A")
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_GPU_INSTANCE_TYPE, indirect=True)
 def test_nvapex(pytorch_training, ec2_connection, gpu_only, ec2_instance_type):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -486,7 +486,7 @@ def test_pytorch_amp(pytorch_training, ec2_connection, gpu_only, ec2_instance_ty
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_training)
     if Version(image_framework_version) < Version("1.6"):
         pytest.skip("Native AMP was introduced in PyTorch 1.6")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -505,7 +505,7 @@ def test_pytorch_amp_inductor(pytorch_training, ec2_connection, gpu_only, ec2_in
         pytest.skip("skipping inductor related test on g3 instance")
     if Version(image_framework_version) < Version("1.6"):
         pytest.skip("Native AMP was introduced in PyTorch 1.6")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -525,7 +525,7 @@ def test_pytorch_s3_plugin_gpu(
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_training)
     if "trcomp" in pytorch_training and Version(image_framework_version) in SpecifierSet("<2.0"):
         pytest.skip(f"Image {pytorch_training} doesn't support s3. Hence test is skipped.")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -542,7 +542,7 @@ def test_pytorch_s3_plugin_cpu(
     pytorch_training, ec2_connection, cpu_only, ec2_instance_type, outside_versions_skip
 ):
     outside_versions_skip(pytorch_training, "1.8.0", "1.12.1")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -558,7 +558,7 @@ def test_pytorch_training_torchaudio_gpu(
     pytorch_training, ec2_connection, gpu_only, ec2_instance_type, pt111_and_above_only
 ):
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_training)
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -574,7 +574,7 @@ def test_pytorch_training_torchaudio_cpu(
     pytorch_training, ec2_connection, cpu_only, ec2_instance_type, pt111_and_above_only
 ):
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_training)
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -592,7 +592,7 @@ def test_pytorch_training_torchdata_gpu(
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_training)
     if "trcomp" in pytorch_training and Version(image_framework_version) in SpecifierSet("<2.0"):
         pytest.skip(f"Image {pytorch_training} doesn't package torch_data. Hence test is skipped.")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -612,7 +612,7 @@ def test_pytorch_training_torchdata_cpu(
     pytorch_training, ec2_connection, cpu_only, ec2_instance_type, pt111_and_above_only
 ):
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_training)
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )
@@ -631,7 +631,7 @@ def test_pytorch_training_torchdata_cpu(
 def test_pytorch_telemetry_gpu(
     pytorch_training, ec2_connection, gpu_only, ec2_instance_type, pt15_and_above_only
 ):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_training, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_training} is incompatible with instance type {ec2_instance_type}"
         )

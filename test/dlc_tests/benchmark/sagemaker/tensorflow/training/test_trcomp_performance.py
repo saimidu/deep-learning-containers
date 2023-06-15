@@ -1,17 +1,21 @@
-import pytest, re
-import numpy as np
+import re
+
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 
-import boto3, sagemaker
+import boto3
+import numpy as np
+import pytest
+import sagemaker
+
 from sagemaker.tensorflow import TensorFlow
 from sagemaker.training_compiler.config import TrainingCompilerConfig
 
-from src.benchmark_metrics import (
+from dlc_test_utils.benchmark_metrics import (
     TRCOMP_THRESHOLD,
     get_threshold_for_image,
 )
-from test.test_utils import (
+from dlc_test_utils import (
     BENCHMARK_RESULTS_S3_BUCKET,
     LOGGER,
     get_framework_and_version_from_tag,

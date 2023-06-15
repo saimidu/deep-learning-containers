@@ -10,7 +10,7 @@ import pytest
 from invoke.context import Context
 from invoke.exceptions import UnexpectedExit
 
-from test.test_utils import (
+from dlc_test_utils import (
     is_mainline_context,
     is_rc_test_context,
     get_framework_and_version_from_tag,

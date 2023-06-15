@@ -4,18 +4,18 @@ import pytest
 
 from packaging.version import Version
 
-from src.benchmark_metrics import (
+from dlc_test_utils.benchmark_metrics import (
     TENSORFLOW_INFERENCE_GPU_THRESHOLD,
     TENSORFLOW_INFERENCE_CPU_THRESHOLD,
     get_threshold_for_image,
 )
-from test.test_utils import (
+from dlc_test_utils import (
     get_framework_and_version_from_tag,
     is_pr_context,
     is_tf_version,
     UL20_BENCHMARK_CPU_ARM64_US_WEST_2,
 )
-from test.test_utils.ec2 import (
+from dlc_test_utils.ec2 import (
     ec2_performance_upload_result_to_s3_and_validate,
     post_process_inference,
 )

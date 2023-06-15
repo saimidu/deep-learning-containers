@@ -3,7 +3,7 @@ import argparse
 
 from dlc.github_handler import GitHubHandler
 
-from codebuild_environment import get_codebuild_project_name, get_user_and_repo_name
+from dlc_build_utils.codebuild_environment import get_codebuild_project_name, get_user_and_repo_name
 
 
 def get_args():

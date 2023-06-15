@@ -14,9 +14,10 @@ language governing permissions and limitations under the License.
 """
 
 from dlc_build_utils.codebuild_environment import get_cloned_folder_path
-from dlc_build_utils.context import Context
-from image import DockerImage
-from utils import generate_safety_report_for_image
+
+from .context import Context
+from .image import DockerImage
+from .utils import generate_safety_report_for_image
 
 import os
 

@@ -1,13 +1,15 @@
 import os
 import random
 
-import pytest
 from time import sleep
+
+import pytest
 
 from invoke import run
 
-import test.test_utils.eks as eks_utils
-import test.test_utils as test_utils
+import dlc_test_utils
+
+from dlc_test_utils import eks as eks_utils
 
 
 @pytest.mark.model("resnet50")
@@ -50,7 +52,7 @@ def test_eks_mxnet_neuron_inference(mxnet_inference_neuron):
                 selector_name, port_to_forward, "8080"
             )
 
-        assert test_utils.request_mxnet_inference(port=port_to_forward, model="mxnet-resnet50")
+        assert dlc_test_utils.request_mxnet_inference(port=port_to_forward, model="mxnet-resnet50")
     finally:
         run(f"kubectl delete deployment {selector_name}")
         run(f"kubectl delete service {selector_name}")
@@ -72,7 +74,7 @@ def __test_eks_mxnet_squeezenet_inference(mxnet_inference):
     rand_int = random.randint(4001, 6000)
 
     processor = "gpu" if "gpu" in mxnet_inference else "cpu"
-    test_type = test_utils.get_eks_k8s_test_type_label(mxnet_inference)
+    test_type = dlc_test_utils.get_eks_k8s_test_type_label(mxnet_inference)
 
     model = "squeezenet=https://s3.amazonaws.com/model-server/models/squeezenet_v1.1/squeezenet_v1.1.model"
     yaml_path = os.path.join(
@@ -108,7 +110,7 @@ def __test_eks_mxnet_squeezenet_inference(mxnet_inference):
                 selector_name, port_to_forward, "8080"
             )
 
-        assert test_utils.request_mxnet_inference(port=port_to_forward)
+        assert dlc_test_utils.request_mxnet_inference(port=port_to_forward)
     finally:
         run(f"kubectl delete deployment {selector_name}")
         run(f"kubectl delete service {selector_name}")
@@ -174,7 +176,7 @@ def __test_eks_mxnet_gluonnlp_inference(mxnet_inference):
                 selector_name, port_to_forward, "8080"
             )
 
-        assert test_utils.request_mxnet_inference_gluonnlp(port=port_to_forward)
+        assert dlc_test_utils.request_mxnet_inference_gluonnlp(port=port_to_forward)
     finally:
         run(f"kubectl delete deployment {selector_name}")
         run(f"kubectl delete service {selector_name}")

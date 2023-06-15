@@ -5,8 +5,8 @@ import re
 
 from invoke.context import Context
 
-from test.test_utils import LOGGER, get_repository_local_path
-from test.test_utils.ec2 import get_instance_num_gpus
+from . import LOGGER, get_repository_local_path
+from .ec2 import get_instance_num_gpus
 
 
 def get_test_coverage_file_path():

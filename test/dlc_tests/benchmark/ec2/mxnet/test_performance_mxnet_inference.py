@@ -2,16 +2,16 @@ import os
 
 import pytest
 
-from test.test_utils import (
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
     get_framework_and_version_from_tag,
     UL20_CPU_ARM64_US_WEST_2,
 )
-from test.test_utils.ec2 import (
+from dlc_test_utils.ec2 import (
     execute_ec2_inference_performance_test,
     post_process_mxnet_ec2_performance,
 )
-from src.benchmark_metrics import (
+from dlc_test_utils.benchmark_metrics import (
     MXNET_INFERENCE_CPU_IMAGENET_THRESHOLD,
     MXNET_INFERENCE_GPU_IMAGENET_THRESHOLD,
     get_threshold_for_image,

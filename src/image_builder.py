@@ -26,11 +26,11 @@ import itertools
 import utils
 
 from dlc_build_utils import constants
-from dlc_build_utils.buildspec import Buildspec
 from dlc_build_utils.codebuild_environment import get_codebuild_project_name, get_cloned_folder_path
 from dlc_build_utils.config import parse_dlc_developer_configs, is_build_enabled
-from dlc_build_utils.context import Context
 
+from .buildspec import Buildspec
+from .context import Context
 from .metrics import Metrics
 from .image import DockerImage
 from .common_stage_image import CommonStageImage

@@ -2,19 +2,20 @@ from packaging.version import Version
 from packaging.specifiers import SpecifierSet
 import pytest
 
-from test import test_utils
-from test.test_utils import (
+import dlc_test_utils
+
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
+    LOGGER,
     get_framework_and_version_from_tag,
     get_inference_server_type,
     UL20_CPU_ARM64_US_WEST_2,
 )
-from test.test_utils.ec2 import (
+from dlc_test_utils.ec2 import (
     get_ec2_instance_type,
     execute_ec2_inference_test,
     get_ec2_accelerator_type,
 )
-from test.dlc_tests.conftest import LOGGER
 
 
 PT_EC2_CPU_INSTANCE_TYPE = get_ec2_instance_type(default="c5.9xlarge", processor="cpu")
@@ -27,7 +28,7 @@ PT_EC2_SINGLE_GPU_INSTANCE_TYPES = ["p3.2xlarge", "g4dn.4xlarge", "g5.4xlarge"]
 def test_ec2_pytorch_inference_gpu_inductor(
     pytorch_inference, ec2_connection, region, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -65,7 +66,7 @@ def ec2_pytorch_inference(image_uri, processor, ec2_connection, region):
     container_name = f"{repo_name}-{image_tag}-ec2"
     model_name = "pytorch-densenet-inductor"
 
-    inference_cmd = test_utils.get_inference_run_command(image_uri, model_name, processor)
+    inference_cmd = dlc_test_utils.get_inference_run_command(image_uri, model_name, processor)
     docker_cmd = "nvidia-docker" if "gpu" in image_uri else "docker"
 
     docker_run_cmd = (
@@ -78,7 +79,7 @@ def ec2_pytorch_inference(image_uri, processor, ec2_connection, region):
         LOGGER.info(docker_run_cmd)
         ec2_connection.run(docker_run_cmd, hide=True)
         server_type = get_inference_server_type(image_uri)
-        inference_result = test_utils.request_pytorch_inference_densenet(
+        inference_result = dlc_test_utils.request_pytorch_inference_densenet(
             connection=ec2_connection, model_name=model_name, server_type=server_type
         )
         assert (

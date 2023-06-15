@@ -1,32 +1,31 @@
+import logging
 import os
 import sys
 import time
-import logging
+
 from datetime import date, timedelta, datetime
 
+import boto3
 import pytest
+
 from packaging.version import Version
 from packaging.specifiers import SpecifierSet
 
-import test.test_utils.ec2 as ec2_utils
-from test import test_utils
-from test.test_utils import (
+import dlc_test_utils
+
+from dlc_test_utils import ec2 as ec2_utils
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
+    LOGGER,
     get_framework_and_version_from_tag,
     get_inference_server_type,
     get_cuda_version_from_tag,
 )
-from test.test_utils.ec2 import (
+from dlc_test_utils.ec2 import (
     get_ec2_instance_type,
     execute_ec2_inference_test,
     get_ec2_accelerator_type,
 )
-from test.dlc_tests.conftest import LOGGER
-import boto3
-
-LOGGER = logging.getLogger(__name__)
-LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-LOGGER.setLevel(logging.INFO)
 
 
 PT_EC2_GPU_INSTANCE_TYPE = get_ec2_instance_type(default="g3.8xlarge", processor="gpu")
@@ -63,7 +62,7 @@ PT_TORCHDATA_DEV_CMD = os.path.join(CONTAINER_TESTS_PREFIX, "pytorch_tests", "te
 
 @pytest.mark.usefixtures("sagemaker")
 @pytest.mark.model("resnet")
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.NEURON_INF1_AMI_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.NEURON_INF1_AMI_US_WEST_2], indirect=True)
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_NEURON_INSTANCE_TYPE, indirect=True)
 def test_ec2_pytorch_inference_neuron(pytorch_inference_neuron, ec2_connection, region):
     ec2_pytorch_inference(pytorch_inference_neuron, "neuron", ec2_connection, region)
@@ -71,7 +70,7 @@ def test_ec2_pytorch_inference_neuron(pytorch_inference_neuron, ec2_connection, 
 
 @pytest.mark.usefixtures("sagemaker")
 @pytest.mark.model("resnet")
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
 @pytest.mark.parametrize(
     "ec2_instance_type",
     PT_EC2_NEURON_TRN1_INSTANCE_TYPE + PT_EC2_NEURON_INF2_INSTANCE_TYPE,
@@ -87,7 +86,7 @@ def test_ec2_pytorch_inference_neuronx(pytorch_inference_neuronx, ec2_connection
 def test_ec2_pytorch_inference_gpu(
     pytorch_inference, ec2_connection, region, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -103,7 +102,7 @@ def test_ec2_pytorch_inference_cpu(pytorch_inference, ec2_connection, region, cp
 @pytest.mark.usefixtures("sagemaker")
 @pytest.mark.model("densenet")
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_GRAVITON_INSTANCE_TYPE, indirect=True)
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
 def test_ec2_pytorch_inference_graviton_cpu(
     pytorch_inference_graviton, ec2_connection, region, cpu_only
 ):
@@ -143,7 +142,7 @@ def test_pytorch_inference_torchaudio_gpu(
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_inference)
     if Version(image_framework_version) not in SpecifierSet("!=1.9.*,!=1.10.*"):
         pytest.skip("torchaudio is not supported in PT 1.9 and 1.10")
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -171,7 +170,7 @@ def test_pytorch_inference_torchdata_gpu(
     pytorch_inference, ec2_connection, gpu_only, ec2_instance_type, pt111_and_above_only
 ):
     _, image_framework_version = get_framework_and_version_from_tag(pytorch_inference)
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -210,7 +209,7 @@ def ec2_pytorch_inference(image_uri, processor, ec2_connection, region):
         model_name = "pytorch-resnet-neuronx"
     processor_is_neuron = "neuron" in processor
 
-    inference_cmd = test_utils.get_inference_run_command(image_uri, model_name, processor)
+    inference_cmd = dlc_test_utils.get_inference_run_command(image_uri, model_name, processor)
     docker_cmd = "nvidia-docker" if "gpu" in image_uri else "docker"
 
     if processor_is_neuron:
@@ -232,7 +231,7 @@ def ec2_pytorch_inference(image_uri, processor, ec2_connection, region):
         LOGGER.info(docker_run_cmd)
         ec2_connection.run(docker_run_cmd, hide=True)
         server_type = get_inference_server_type(image_uri)
-        inference_result = test_utils.request_pytorch_inference_densenet(
+        inference_result = dlc_test_utils.request_pytorch_inference_densenet(
             connection=ec2_connection, model_name=model_name, server_type=server_type
         )
         if not inference_result:
@@ -253,7 +252,7 @@ def ec2_pytorch_inference(image_uri, processor, ec2_connection, region):
 def test_pytorch_inference_telemetry_gpu(
     pytorch_inference, ec2_connection, gpu_only, ec2_instance_type, pt15_and_above_only
 ):
-    if test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(pytorch_inference, ec2_instance_type):
         pytest.skip(
             f"Image {pytorch_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -274,7 +273,7 @@ def test_pytorch_inference_telemetry_cpu(
 @pytest.mark.integration("telemetry")
 @pytest.mark.model("N/A")
 @pytest.mark.parametrize("ec2_instance_type", PT_EC2_GRAVITON_INSTANCE_TYPE, indirect=True)
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
 def test_pytorch_inference_telemetry_graviton_cpu(
     pytorch_inference_graviton, ec2_connection, cpu_only
 ):

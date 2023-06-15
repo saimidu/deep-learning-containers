@@ -5,7 +5,7 @@ import pytest
 
 from invoke import run
 
-import test.test_utils.eks as eks_utils
+from dlc_test_utils import eks as eks_utils
 
 
 @pytest.mark.integration("keras")

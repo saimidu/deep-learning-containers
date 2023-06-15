@@ -6,11 +6,10 @@ import pytest
 
 from invoke import run
 from invoke.context import Context
-
-import test.test_utils.eks as eks_utils
-from test.test_utils import get_container_name, get_framework_and_version_from_tag
-
 from packaging.version import Version
+
+from dlc_test_utils import eks as eks_utils
+from dlc_test_utils import get_container_name, get_framework_and_version_from_tag
 
 
 @pytest.mark.model("mnist")

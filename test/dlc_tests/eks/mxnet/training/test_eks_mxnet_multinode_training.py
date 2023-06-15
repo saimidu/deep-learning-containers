@@ -9,10 +9,10 @@ from invoke import run
 from invoke.context import Context
 from retrying import retry
 
-import test.test_utils.eks as eks_utils
-import test.test_utils.ec2 as ec2_utils
+from dlc_test_utils import ec2 as ec2_utils
+from dlc_test_utils import eks as eks_utils
 
-from test.test_utils import is_pr_context, SKIP_PR_REASON
+from dlc_test_utils import is_pr_context, SKIP_PR_REASON
 
 LOGGER = eks_utils.LOGGER
 

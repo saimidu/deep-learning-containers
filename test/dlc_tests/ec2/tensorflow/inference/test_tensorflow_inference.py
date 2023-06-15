@@ -1,14 +1,16 @@
+import json
 import os
 import re
-import json
+
 from time import sleep
+
 import pytest
 
-import test.test_utils.ec2 as ec2_utils
+import dlc_test_utils
 
-from test import test_utils
-from test.test_utils.ec2 import get_ec2_instance_type, get_ec2_accelerator_type
-from test.dlc_tests.conftest import LOGGER
+from dlc_test_utils import LOGGER
+from dlc_test_utils import ec2 as ec2_utils
+from dlc_test_utils.ec2 import get_ec2_instance_type, get_ec2_accelerator_type
 
 TENSORFLOW1_VERSION = "1."
 TENSORFLOW2_VERSION = "2."
@@ -34,7 +36,7 @@ TF_EC2_GRAVITON_INSTANCE_TYPE = get_ec2_instance_type(
 
 @pytest.mark.model("mnist")
 @pytest.mark.parametrize("ec2_instance_type", TF_EC2_NEURON_ACCELERATOR_TYPE, indirect=True)
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_TF_NEURON_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_TF_NEURON_US_WEST_2], indirect=True)
 def test_ec2_tensorflow_inference_neuron(tensorflow_inference_neuron, ec2_connection, region):
     run_ec2_tensorflow_inference(tensorflow_inference_neuron, ec2_connection, "8500", region)
 
@@ -46,7 +48,7 @@ def test_ec2_tensorflow_inference_neuron(tensorflow_inference_neuron, ec2_connec
     indirect=True,
 )
 # FIX ME: Sharing the AMI from neuron account to DLC account; use public DLAMI with inf1 support instead
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_PT_NEURON_US_WEST_2], indirect=True)
 def test_ec2_tensorflow_inference_neuronx(tensorflow_inference_neuronx, ec2_connection, region):
     run_ec2_tensorflow_inference(tensorflow_inference_neuronx, ec2_connection, "8500", region)
 
@@ -57,7 +59,7 @@ def test_ec2_tensorflow_inference_neuronx(tensorflow_inference_neuronx, ec2_conn
 def test_ec2_tensorflow_inference_gpu(
     tensorflow_inference, ec2_connection, region, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(tensorflow_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(tensorflow_inference, ec2_instance_type):
         pytest.skip(
             f"Image {tensorflow_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -70,7 +72,7 @@ def test_ec2_tensorflow_inference_gpu(
 def test_ec2_tensorflow_inference_gpu_tensorrt(
     tensorflow_inference, ec2_connection, region, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(tensorflow_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(tensorflow_inference, ec2_instance_type):
         pytest.skip(
             f"Image {tensorflow_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -109,7 +111,7 @@ def test_ec2_tensorflow_inference_gpu_tensorrt(
 
         ## Run Model Server
         ec2_connection.run(docker_run_server_cmd, hide=True)
-        test_results = test_utils.request_tensorflow_inference(
+        test_results = dlc_test_utils.request_tensorflow_inference(
             model_name,
             connection=ec2_connection,
             inference_string=f"""'{{"instances": [[{",".join([str([1]*28)]*28)}]]}}'""",
@@ -163,7 +165,7 @@ def test_ec2_tensorflow_inference_eia_gpu(
 def test_ec2_tensorflow_inference_gpu_telemetry(
     tensorflow_inference, ec2_connection, region, gpu_only, ec2_instance_type
 ):
-    if test_utils.is_image_incompatible_with_instance_type(tensorflow_inference, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(tensorflow_inference, ec2_instance_type):
         pytest.skip(
             f"Image {tensorflow_inference} is incompatible with instance type {ec2_instance_type}"
         )
@@ -181,7 +183,7 @@ def test_ec2_tensorflow_inference_cpu_telemetry(
 
 @pytest.mark.model("mnist")
 @pytest.mark.parametrize("ec2_instance_type", TF_EC2_GRAVITON_INSTANCE_TYPE, indirect=True)
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
 def test_ec2_tensorflow_inference_graviton_cpu(
     tensorflow_inference_graviton, ec2_connection, region, cpu_only
 ):
@@ -190,7 +192,7 @@ def test_ec2_tensorflow_inference_graviton_cpu(
 
 @pytest.mark.model("mnist")
 @pytest.mark.parametrize("ec2_instance_type", TF_EC2_GRAVITON_INSTANCE_TYPE, indirect=True)
-@pytest.mark.parametrize("ec2_instance_ami", [test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
+@pytest.mark.parametrize("ec2_instance_ami", [dlc_test_utils.UL20_CPU_ARM64_US_WEST_2], indirect=True)
 def test_ec2_tensorflow_inference_graviton_cpu_telemetry(
     tensorflow_inference_graviton, ec2_connection, region, cpu_only
 ):
@@ -260,13 +262,13 @@ def run_ec2_tensorflow_inference(
         ec2_connection.run(docker_run_cmd, hide=True)
         sleep(20)
         if is_neuron and str(framework_version).startswith(TENSORFLOW2_VERSION):
-            test_utils.request_tensorflow_inference(
+            dlc_test_utils.request_tensorflow_inference(
                 model_name,
                 connection=ec2_connection,
                 inference_string="'{\"instances\": [[1.0, 2.0, 5.0]]}'",
             )
         else:
-            test_utils.request_tensorflow_inference_grpc(
+            dlc_test_utils.request_tensorflow_inference_grpc(
                 script_file_path=mnist_client_path, port=grpc_port, connection=ec2_connection
             )
         if telemetry_mode:

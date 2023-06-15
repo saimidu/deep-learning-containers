@@ -1,17 +1,19 @@
 import os
 import random
 
-import pytest
 from time import sleep
+
+import pytest
 
 from invoke import run
 
-import test.test_utils.eks as eks_utils
-import test.test_utils as test_utils
+import dlc_test_utils
+
+from dlc_test_utils import eks as eks_utils
 
 
 def __run_pytorch_neuron_inference(image, model_name, model_url, processor):
-    server_type = test_utils.get_inference_server_type(image)
+    server_type = dlc_test_utils.get_inference_server_type(image)
 
     model = f"{model_name}={model_url}"
     server_cmd = "torchserve"
@@ -52,7 +54,7 @@ def __run_pytorch_neuron_inference(image, model_name, model_url, processor):
                 selector_name, port_to_forward, "8080"
             )
 
-        assert test_utils.request_pytorch_inference_densenet(
+        assert dlc_test_utils.request_pytorch_inference_densenet(
             port=port_to_forward, server_type=server_type, model_name=model_name
         )
     finally:
@@ -92,7 +94,7 @@ def test_eks_pytorch_densenet_inference_graviton(pytorch_inference_graviton):
 
 
 def __test_eks_pytorch_densenet_inference(pytorch_inference):
-    server_type = test_utils.get_inference_server_type(pytorch_inference)
+    server_type = dlc_test_utils.get_inference_server_type(pytorch_inference)
     if server_type == "ts":
         model = "pytorch-densenet=https://torchserve.s3.amazonaws.com/mar_files/densenet161.mar"
         server_cmd = "torchserve"
@@ -105,7 +107,7 @@ def __test_eks_pytorch_densenet_inference(pytorch_inference):
     rand_int = random.randint(4001, 6000)
 
     processor = "gpu" if "gpu" in pytorch_inference else "cpu"
-    test_type = test_utils.get_eks_k8s_test_type_label(pytorch_inference)
+    test_type = dlc_test_utils.get_eks_k8s_test_type_label(pytorch_inference)
 
     yaml_path = os.path.join(
         os.sep, "tmp", f"pytorch_single_node_{processor}_inference_{rand_int}.yaml"
@@ -142,7 +144,7 @@ def __test_eks_pytorch_densenet_inference(pytorch_inference):
                 selector_name, port_to_forward, "8080"
             )
 
-        assert test_utils.request_pytorch_inference_densenet(
+        assert dlc_test_utils.request_pytorch_inference_densenet(
             port=port_to_forward, server_type=server_type
         )
     finally:

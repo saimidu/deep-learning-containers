@@ -14,9 +14,9 @@ from invoke.context import Context
 from invoke import exceptions
 from junit_xml import TestSuite, TestCase
 
-from test_utils import ec2 as ec2_utils
-from test_utils import metrics as metrics_utils
-from test_utils import (
+from . import ec2 as ec2_utils
+from . import metrics as metrics_utils
+from . import (
     destroy_ssh_keypair,
     generate_ssh_keypair,
     get_framework_and_version_from_tag,
@@ -35,7 +35,7 @@ from test_utils import (
     DEFAULT_REGION,
     is_nightly_context,
 )
-from test_utils.pytest_cache import PytestCache
+from .pytest_cache import PytestCache
 
 
 class DLCSageMakerRemoteTestFailure(Exception):

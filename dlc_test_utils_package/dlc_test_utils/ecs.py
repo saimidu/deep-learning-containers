@@ -6,9 +6,11 @@ import os
 
 import boto3
 
+from packaging.version import Version
+from packaging.specifiers import SpecifierSet
 from retrying import retry
 
-from test.test_utils import (
+from . import (
     DEFAULT_REGION,
     get_inference_run_command,
     get_tensorflow_model_name,
@@ -17,9 +19,7 @@ from test.test_utils import (
     get_framework_and_version_from_tag,
     get_tensorflow_inference_environment_variables,
 )
-from test.test_utils import ec2 as ec2_utils
-from packaging.version import Version
-from packaging.specifiers import SpecifierSet
+from . import ec2 as ec2_utils
 
 
 ECS_AMI_ID = {

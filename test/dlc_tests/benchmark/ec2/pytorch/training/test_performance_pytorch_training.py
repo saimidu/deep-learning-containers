@@ -3,7 +3,7 @@ import time
 import pytest
 import re
 
-from test.test_utils import (
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
     PT_GPU_PY3_BENCHMARK_IMAGENET_AMI_US_WEST_2,
     UBUNTU_18_HPU_DLAMI_US_WEST_2,
@@ -11,13 +11,13 @@ from test.test_utils import (
     get_framework_and_version_from_tag,
     is_pr_context,
 )
-from test.test_utils.ec2 import (
+from dlc_test_utils.ec2 import (
     execute_ec2_training_performance_test,
     ec2_performance_upload_result_to_s3_and_validate,
     execute_ec2_habana_training_performance_test,
     get_ec2_instance_type,
 )
-from src.benchmark_metrics import (
+from dlc_test_utils.benchmark_metrics import (
     PYTORCH_TRAINING_GPU_SYNTHETIC_THRESHOLD,
     PYTORCH_TRAINING_GPU_IMAGENET_THRESHOLD,
     get_threshold_for_image,

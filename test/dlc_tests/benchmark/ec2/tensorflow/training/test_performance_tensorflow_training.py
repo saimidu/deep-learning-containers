@@ -2,16 +2,16 @@ import os
 import re
 import pytest
 
-from test.test_utils import (
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
     get_framework_and_version_from_tag,
     UBUNTU_18_HPU_DLAMI_US_WEST_2,
 )
-from test.test_utils.ec2 import (
+from dlc_test_utils.ec2 import (
     execute_ec2_training_performance_test,
     execute_ec2_habana_training_performance_test,
 )
-from src.benchmark_metrics import (
+from dlc_test_utils.benchmark_metrics import (
     get_threshold_for_image,
     TENSORFLOW_TRAINING_CPU_SYNTHETIC_THRESHOLD,
     TENSORFLOW_TRAINING_GPU_SYNTHETIC_THRESHOLD,

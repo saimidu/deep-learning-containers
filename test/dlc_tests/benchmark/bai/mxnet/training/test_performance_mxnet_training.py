@@ -2,7 +2,7 @@ import re
 import pytest
 
 from invoke.context import Context
-from test.test_utils.benchmark import execute_single_node_benchmark, get_py_version
+from dlc_test_utils.benchmark import execute_single_node_benchmark, get_py_version
 
 
 @pytest.mark.skip(reason="Temp skip due to timeout")

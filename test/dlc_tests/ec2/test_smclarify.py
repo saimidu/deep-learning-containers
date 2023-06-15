@@ -4,14 +4,14 @@ import pytest
 
 from packaging.version import Version
 
-from test.test_utils import CONTAINER_TESTS_PREFIX, LOGGER
-from test.test_utils import (
+from dlc_test_utils import CONTAINER_TESTS_PREFIX, LOGGER
+from dlc_test_utils import (
     get_account_id_from_image_uri,
     get_cuda_version_from_tag,
     get_region_from_image_uri,
     login_to_ecr_registry,
 )
-from test.test_utils.ec2 import get_ec2_instance_type
+from dlc_test_utils.ec2 import get_ec2_instance_type
 
 SMCLARIFY_SCRIPT = os.path.join(CONTAINER_TESTS_PREFIX, "test_smclarify_bias_metrics.py")
 

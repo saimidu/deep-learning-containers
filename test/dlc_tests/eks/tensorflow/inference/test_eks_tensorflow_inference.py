@@ -5,8 +5,8 @@ import pytest
 
 from invoke import run
 
-import test.test_utils.eks as eks_utils
-import test.test_utils as test_utils
+from dlc_test_utils import eks as eks_utils
+import dlc_test_utils
 
 
 @pytest.mark.model("mnist")
@@ -57,7 +57,7 @@ def test_eks_tensorflow_neuron_inference(tensorflow_inference_neuron):
             )
 
         inference_string = '\'{"instances": ' + "{}".format([[0 for i in range(784)]]) + "}'"
-        assert test_utils.request_tensorflow_inference(
+        assert dlc_test_utils.request_tensorflow_inference(
             model_name=model_name, port=port_to_forward, inference_string=inference_string
         )
     finally:
@@ -114,7 +114,7 @@ def test_eks_tensorflow_neuronx_inference(tensorflow_inference_neuronx):
             )
 
         inference_string = "'{\"instances\": [[1.0, 2.0, 5.0]]}'"
-        assert test_utils.request_tensorflow_inference(
+        assert dlc_test_utils.request_tensorflow_inference(
             model_name=model_name, port=port_to_forward, inference_string=inference_string
         )
     finally:
@@ -146,7 +146,7 @@ def __test_eks_tensorflow_half_plus_two_inference(tensorflow_inference):
     inference_service_name = selector_name = f"half-plus-two-service-{processor}-{rand_int}"
     model_base_path = get_eks_tensorflow_model_base_path(tensorflow_inference, model_name)
     command, args = get_tensorflow_command_args(tensorflow_inference, model_name, model_base_path)
-    test_type = test_utils.get_eks_k8s_test_type_label(tensorflow_inference)
+    test_type = dlc_test_utils.get_eks_k8s_test_type_label(tensorflow_inference)
     search_replace_dict = {
         "<NUM_REPLICAS>": num_replicas,
         "<SELECTOR_NAME>": selector_name,
@@ -176,14 +176,14 @@ def __test_eks_tensorflow_half_plus_two_inference(tensorflow_inference):
                 selector_name, port_to_forward, "8500"
             )
 
-        assert test_utils.request_tensorflow_inference(model_name=model_name, port=port_to_forward)
+        assert dlc_test_utils.request_tensorflow_inference(model_name=model_name, port=port_to_forward)
     finally:
         run(f"kubectl delete deployment {selector_name}")
         run(f"kubectl delete service {selector_name}")
 
 
 @pytest.mark.skipif(
-    not test_utils.is_nightly_context(), reason="Running additional model in nightly context only"
+    not dlc_test_utils.is_nightly_context(), reason="Running additional model in nightly context only"
 )
 @pytest.mark.model("albert")
 def test_eks_tensorflow_albert(tensorflow_inference):
@@ -209,7 +209,7 @@ def __test_eks_tensorflow_albert(tensorflow_inference):
     inference_service_name = selector_name = f"albert-{processor}-{rand_int}"
     model_base_path = get_eks_tensorflow_model_base_path(tensorflow_inference, model_name)
     command, args = get_tensorflow_command_args(tensorflow_inference, model_name, model_base_path)
-    test_type = test_utils.get_eks_k8s_test_type_label(tensorflow_inference)
+    test_type = dlc_test_utils.get_eks_k8s_test_type_label(tensorflow_inference)
     search_replace_dict = {
         "<NUM_REPLICAS>": num_replicas,
         "<SELECTOR_NAME>": selector_name,
@@ -239,7 +239,7 @@ def __test_eks_tensorflow_albert(tensorflow_inference):
                 selector_name, port_to_forward, "8500"
             )
 
-        assert test_utils.request_tensorflow_inference_nlp(
+        assert dlc_test_utils.request_tensorflow_inference_nlp(
             model_name=model_name, port=port_to_forward
         )
     finally:
@@ -258,7 +258,7 @@ def get_tensorflow_command_args(image_uri, model_name, model_base_path):
         port = 8501
         rest_api_port = 8500
         s3_location = "s3://tensoflow-trained-models"
-    if test_utils.is_below_framework_version("2.7", image_uri, "tensorflow"):
+    if dlc_test_utils.is_below_framework_version("2.7", image_uri, "tensorflow"):
         command = f"[{model_server}]"
         args = f"['--port={port}', '--rest_api_port={rest_api_port}', '--model_name={model_name}', '--model_base_path={model_base_path}']"
     else:
@@ -275,11 +275,11 @@ def get_eks_tensorflow_model_base_path(image_uri, model_name):
     :param image_uri: ECR image URI
     :return: <string> model base path
     """
-    if test_utils.is_below_framework_version("2.7", image_uri, "tensorflow"):
+    if dlc_test_utils.is_below_framework_version("2.7", image_uri, "tensorflow"):
         if "neuron" in image_uri:
             s3_model_bucket = "s3://aws-dlc-sample-models"
         else:
-            s3_model_bucket = test_utils.TENSORFLOW_MODELS_BUCKET
+            s3_model_bucket = dlc_test_utils.TENSORFLOW_MODELS_BUCKET
         model_base_path = f"{s3_model_bucket}/{model_name}"
     else:
         model_base_path = f"/tensorflow_model/{model_name}"

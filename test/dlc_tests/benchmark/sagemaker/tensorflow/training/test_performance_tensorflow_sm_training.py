@@ -7,14 +7,14 @@ from random import Random
 import pytest
 
 from invoke.context import Context
-from src.benchmark_metrics import (
+from dlc_test_utils.benchmark_metrics import (
     TENSORFLOW_SM_TRAINING_CPU_1NODE_THRESHOLD,
     TENSORFLOW_SM_TRAINING_CPU_4NODE_THRESHOLD,
     TENSORFLOW_SM_TRAINING_GPU_1NODE_THRESHOLD,
     TENSORFLOW_SM_TRAINING_GPU_4NODE_THRESHOLD,
     get_threshold_for_image,
 )
-from test.test_utils import (
+from dlc_test_utils import (
     BENCHMARK_RESULTS_S3_BUCKET,
     LOGGER,
     get_framework_and_version_from_tag,

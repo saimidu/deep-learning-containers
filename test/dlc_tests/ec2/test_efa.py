@@ -2,8 +2,7 @@ import os
 
 import pytest
 
-import test.test_utils.ec2 as ec2_utils
-from test.test_utils import (
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
     LOGGER,
     get_account_id_from_image_uri,
@@ -13,7 +12,8 @@ from test.test_utils import (
     login_to_ecr_registry,
     run_cmd_on_container,
 )
-from test.test_utils.ec2 import get_efa_ec2_instance_type, filter_efa_instance_type
+from dlc_test_utils import ec2 as ec2_utils
+from dlc_test_utils.ec2 import get_efa_ec2_instance_type, filter_efa_instance_type
 
 BUILD_ALL_REDUCE_PERF_CMD = os.path.join(CONTAINER_TESTS_PREFIX, "efa", "build_all_reduce_perf.sh")
 EFA_SANITY_TEST_CMD = os.path.join(CONTAINER_TESTS_PREFIX, "efa", "testEFASanity")

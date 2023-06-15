@@ -6,9 +6,9 @@ from dlc_build_utils import constants
 from dlc_build_utils.codebuild_environment import get_codebuild_project_name
 from dlc_build_utils.config import parse_dlc_developer_configs, get_buildspec_override
 
-import utils
+from .utils import build_setup, write_to_json_file
 
-from image_builder import image_builder
+from .image_builder import image_builder
 
 
 def main():
@@ -68,7 +68,7 @@ def main():
     )
 
     # Write empty dict to JSON file, so subsequent buildspec steps do not fail in case we skip this build
-    utils.write_to_json_file(constants.TEST_TYPE_IMAGES_PATH, {})
+    write_to_json_file(constants.TEST_TYPE_IMAGES_PATH, {})
 
     # Skip tensorflow-1 PR jobs, as there are no longer patch releases being added for TF1
     # Purposefully not including this in developer config to make this difficult to enable
@@ -171,7 +171,7 @@ def main():
         or trcomp_builder_enabled
         or build_context != "PR"
     ):
-        utils.build_setup(
+        build_setup(
             args.framework,
             device_types=device_types,
             image_types=image_types,

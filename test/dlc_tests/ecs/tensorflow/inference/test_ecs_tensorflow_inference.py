@@ -1,19 +1,19 @@
 import pytest
 
-import test.test_utils.ecs as ecs_utils
-import test.test_utils.ec2 as ec2_utils
-from test.test_utils import (
-    get_tensorflow_model_name,
-    request_tensorflow_inference,
-    request_tensorflow_inference_nlp,
-    is_nightly_context,
-)
-from test.test_utils import (
+from dlc_test_utils import (
     ECS_AML2_CPU_USWEST2,
     ECS_AML2_GPU_USWEST2,
     ECS_AML2_NEURON_USWEST2,
     ECS_AML2_GRAVITON_CPU_USWEST2,
 )
+from dlc_test_utils import (
+    get_tensorflow_model_name,
+    request_tensorflow_inference,
+    request_tensorflow_inference_nlp,
+    is_nightly_context,
+)
+from dlc_test_utils import ecs as ecs_utils
+from dlc_test_utils import ec2 as ec2_utils
 
 
 @pytest.mark.model("half_plus_two")

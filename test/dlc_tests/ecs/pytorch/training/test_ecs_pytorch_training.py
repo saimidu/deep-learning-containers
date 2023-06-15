@@ -2,18 +2,18 @@ import os
 
 import pytest
 
-from test.test_utils import (
+from packaging.version import Version
+from packaging.specifiers import SpecifierSet
+
+from dlc_test_utils import (
     ECS_AML2_CPU_USWEST2,
     ECS_AML2_GPU_USWEST2,
     ECS_AML2_NEURON_USWEST2,
     CONTAINER_TESTS_PREFIX,
 )
-from test.test_utils import ecs as ecs_utils
-from test.test_utils import ec2 as ec2_utils
-
-from test.test_utils import get_framework_and_version_from_tag, get_cuda_version_from_tag
-from packaging.version import Version
-from packaging.specifiers import SpecifierSet
+from dlc_test_utils import get_framework_and_version_from_tag, get_cuda_version_from_tag
+from dlc_test_utils import ecs as ecs_utils
+from dlc_test_utils import ec2 as ec2_utils
 
 PT_MNIST_TRAINING_SCRIPT = os.path.join(CONTAINER_TESTS_PREFIX, "pytorch_tests", "testPyTorch")
 PT_DGL_TRAINING_SCRIPT = os.path.join(CONTAINER_TESTS_PREFIX, "dgl_tests", "testPyTorchDGL")

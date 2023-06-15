@@ -1,6 +1,7 @@
 import boto3
-import constants
 import random
+
+from dlc_build_utils import constants
 
 
 class Metrics(object):

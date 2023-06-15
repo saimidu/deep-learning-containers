@@ -2,19 +2,19 @@ import os
 
 import pytest
 
-import test.test_utils as test_utils
-
 from packaging.version import Version
 from packaging.specifiers import SpecifierSet
 
-from test.test_utils import (
+import dlc_test_utils
+
+from dlc_test_utils import (
     CONTAINER_TESTS_PREFIX,
     LOGGER,
     is_tf_version,
     get_framework_and_version_from_tag,
     is_nightly_context,
 )
-from test.test_utils.ec2 import get_ec2_instance_type
+from dlc_test_utils.ec2 import get_ec2_instance_type
 
 
 SMDEBUG_SCRIPT = os.path.join(CONTAINER_TESTS_PREFIX, "testSmdebug")
@@ -32,7 +32,7 @@ SMDEBUG_EC2_CPU_INSTANCE_TYPE = get_ec2_instance_type(default="c4.8xlarge", proc
 @pytest.mark.parametrize("ec2_instance_type", SMDEBUG_EC2_GPU_INSTANCE_TYPE, indirect=True)
 @pytest.mark.flaky(reruns=0)
 def test_smdebug_gpu(training, ec2_connection, region, ec2_instance_type, gpu_only, py3_only):
-    if test_utils.is_image_incompatible_with_instance_type(training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(training, ec2_instance_type):
         pytest.skip(f"Image {training} is incompatible with instance type {ec2_instance_type}")
 
     _, image_framework_version = get_framework_and_version_from_tag(training)
@@ -80,7 +80,7 @@ def test_smprofiler_gpu(
 ):
     # Running the profiler tests for pytorch and tensorflow2 frameworks only.
     # This code needs to be modified past reInvent 2020
-    if test_utils.is_image_incompatible_with_instance_type(training, ec2_instance_type):
+    if dlc_test_utils.is_image_incompatible_with_instance_type(training, ec2_instance_type):
         pytest.skip(f"Image {training} is incompatible with instance type {ec2_instance_type}")
     _, image_framework_version = get_framework_and_version_from_tag(training)
     if (

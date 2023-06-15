@@ -19,8 +19,8 @@ import sys
 
 import boto3
 
-import constants
-import config
+from dlc_build_utils import constants
+from dlc_build_utils import config
 
 
 LOGGER = logging.getLogger(__name__)

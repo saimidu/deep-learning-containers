@@ -25,7 +25,7 @@ import dataclasses
 
 # from security import EnhancedJSONEncoder
 
-from src import config
+from dlc_build_utils import config
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)

@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 
-from config import get_dlc_developer_config_path, parse_dlc_developer_configs
+from dlc_build_utils.config import get_dlc_developer_config_path, parse_dlc_developer_configs
 
 
 LOGGER = logging.getLogger(__name__)
